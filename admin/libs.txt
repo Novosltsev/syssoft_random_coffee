@@ -1,0 +1,8 @@
+colorama
+aiogram
+requests
+aiogram
+aiohttp_socks
+django
+django-adminlte3==0.1.6
+django-import-export
