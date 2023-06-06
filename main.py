@@ -15,6 +15,7 @@ from config import *
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Установка уровня логирования
 logging.basicConfig(level=logging.INFO)
@@ -170,6 +171,56 @@ async def cmd_history(message: types.Message):
             await message.reply("История взаимодействий пуста.")
     else:
         await message.reply("Вы не зарегистрированы.")
+
+
+@dp.message_handler(commands=['survey'])
+async def cmd_survey(message: types.Message):
+    # Вопросы для опроса
+    questions = [
+        "Вам понравилась встреча?",
+        "Вы бы хотели повторить встречу в будущем?",
+        "Вы готовы порекомендовать нас своим друзьям?",
+    ]
+
+    # Создаем клавиатуру с кнопками "Да" и "Нет" для каждого вопроса
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    for i, question in enumerate(questions):
+        keyboard.add(
+            InlineKeyboardButton("Да", callback_data=f"survey_{i}_yes"),
+            InlineKeyboardButton("Нет", callback_data=f"survey_{i}_no"),
+        )
+
+    # Отправляем сообщение с опросом и клавиатурой
+    await message.reply("Пожалуйста, ответьте на следующие вопросы:", reply_markup=keyboard)
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith('survey_'))
+async def process_survey_answer(callback_query: types.CallbackQuery):
+    # Разбиваем данные обратного вызова на части
+    _, question_index, answer = callback_query.data.split('_')
+
+    # Выводим ответ на экран
+    await bot.send_message(callback_query.from_user.id, f"Вы выбрали {answer} на вопрос {question_index}.")
+
+    # Завершаем обработку обратного вызова
+    await callback_query.answer()
+
+
+@dp.message_handler()
+async def handle_message(message: types.Message):
+    # Получаем информацию о пользователе
+    user_id = message.from_user.id
+
+    # Проверяем, зарегистрирован ли пользователь
+    cursor.execute('SELECT * FROM db_botuser WHERE user_id = ?', (user_id,))
+    user = cursor.fetchone()
+
+    if user:
+        # Обработка сообщения от зарегистрированного пользователя
+        await message.reply("Привет! Это Дреим Тим.")
+    else:
+        # Обработка сообщения от пользователя, отсутствующего в базе данных
+        await message.reply("Привет! Это Дреим Тим.")
 
 
 async def send_coffee_pairs():
