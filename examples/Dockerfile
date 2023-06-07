@@ -8,4 +8,6 @@ RUN pip install --no-cache-dir -r libs.txt
 
 COPY . .
 
+CMD ["python", "admin\manage.py migrate"]
+CMD ["python", "admin\manage.py runserver"]
 CMD ["python", "main.py"]
