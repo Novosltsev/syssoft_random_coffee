@@ -71,7 +71,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
         # Добавляем пользователя в базу данных со статусом "регистрация"
         cursor.execute('INSERT INTO db_botuser (user_id, first_name, last_name, status) VALUES (?, ?, ?, ?)',
-                       (user_id, first_name, last_name, 'регистрация'))
+                       (user_id, first_name, last_name, 'pause'))
         conn.commit()
 
         # Переходим в состояние ввода адреса электронной почты
@@ -152,7 +152,7 @@ async def process_code(message: types.Message, state: FSMContext):
         # Код верен, выполняем необходимые действия
         # Например, можно установить статус "зарегистрирован" и активность "в игре"
         cursor.execute('UPDATE db_botuser SET status = ?, activity = ? WHERE user_id = ?',
-                       ('зарегистрирован', 'в игре', user_id))
+                       ('registered', 'game', user_id))
         conn.commit()
 
         # Сохраняем информацию о собеседнике в историю
@@ -160,7 +160,7 @@ async def process_code(message: types.Message, state: FSMContext):
         history_first_name = user[2]
         history_last_name = user[3]
         cursor.execute('INSERT INTO db_botuser (user_id, first_name, last_name, activity) VALUES (?, ?, ?, ?)',
-                       (history_user_id, history_first_name, history_last_name, 'в игре'))
+                       (history_user_id, history_first_name, history_last_name, 'game'))
         conn.commit()
 
         await message.reply(great_register)
@@ -182,7 +182,7 @@ async def cmd_history(message: types.Message):
 
     if user:
         # Получаем историю взаимодействий для данного пользователя
-        cursor.execute('SELECT * FROM db_botuser WHERE activity = ? AND id != ?', ('в игре', user[0]))
+        cursor.execute('SELECT * FROM db_botuser WHERE activity = ? AND id != ?', ('game', user[0]))
         interactions = cursor.fetchall()
 
         if len(interactions) > 0:
@@ -201,9 +201,9 @@ async def cmd_history(message: types.Message):
 async def cmd_survey(message: types.Message):
     # Вопросы для опроса
     questions = [
-        "Вам понравилась встреча?",
-        "Вы бы хотели повторить встречу в будущем?",
-        "Вы готовы порекомендовать нас своим друзьям?",
+        "Состоялась встреча?",
+        "Как понравилось?",
+        "На следующей неделе участвуешь?",
     ]
 
     # Создаем клавиатуру с кнопками "Да" и "Нет" для каждого вопроса
@@ -230,23 +230,6 @@ async def process_survey_answer(callback_query: types.CallbackQuery):
     await callback_query.answer()
 
 
-# @dp.message_handler()
-# async def handle_message(message: types.Message):
-#     # Получаем информацию о пользователе
-#     user_id = message.from_user.id
-#
-#     # Проверяем, зарегистрирован ли пользователь
-#     cursor.execute('SELECT * FROM db_botuser WHERE user_id = ?', (user_id,))
-#     user = cursor.fetchone()
-#
-#     if user:
-#         # Обработка сообщения от зарегистрированного пользователя
-#         await message.reply("")
-#     else:
-#         # Обработка сообщения от пользователя, отсутствующего в базе данных
-#         await message.reply("")
-
-
 async def send_coffee_pairs():
     # Получаем текущий день недели и время
     current_day = datetime.now().strftime('%A')
@@ -254,7 +237,7 @@ async def send_coffee_pairs():
 
     if current_day == 'Monday' and current_time == '09:00':
         # Получаем список пользователей со статусом "активный" и активностью "в игре"
-        cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ?', ('активный', 'в игре'))
+        cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ?', ('active', 'game'))
         users = cursor.fetchall()
 
         if len(users) >= 2:
@@ -282,14 +265,14 @@ async def send_coffee_pairs():
                     # Назначаем администратора системы в пару для пользователя без пары
                     if not admin:
                         admin = cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ? AND id != ?',
-                                               ('активный', 'в игре', user1[0])).fetchone()
+                                               ('active', 'game', user1[0])).fetchone()
 
                         if admin:
                             await bot.send_message(chat_id=user1[1], text=f"{pairs} {admin[2]} ({admin[3]})")
 
     elif current_day == 'Monday' and current_time == '09:15':
         # Получаем список пользователей со статусом "активный" и активностью "в игре"
-        cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ?', ('активный', 'в игре'))
+        cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ?', ('active', 'game'))
         users = cursor.fetchall()
 
         for user in users:
@@ -297,7 +280,7 @@ async def send_coffee_pairs():
 
     elif current_day == 'Friday' and current_time == '17:00':
         # Получаем список пользователей со статусом "активный" и активностью "в игре"
-        cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ?', ('активный', 'в игре'))
+        cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ?', ('active', 'game'))
         users = cursor.fetchall()
 
         for user in users:
