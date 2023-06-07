@@ -57,6 +57,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
 
+
+
     # Проверяем, зарегистрирован ли пользователь
     cursor.execute('SELECT * FROM db_botuser WHERE user_id = ?', (user_id,))
     user = cursor.fetchone()
@@ -89,29 +91,51 @@ async def process_email(message: types.Message, state: FSMContext):
 
     if not re.match(r"[^@]+@[^@]+\.[^@]+", message.text):
         await message.reply(bad_address)
+
+
     else:
+
+        user_id = message.from_user.id
         email = message.text
 
-        domain = email.split('@')[1]  # Получаем домен из адреса электронной почты
+        # Проверяем, зарегистрирован ли пользователь
+        cursor.execute('SELECT * FROM db_botuser WHERE email = ?', (email,))
+        user = cursor.fetchone()
 
-        if domain not in allowed_domains:
-            await message.reply(no_address)
+        if user:
+            # Обработка сообщения от зарегистрированного пользователя
+            await message.reply("Привет! Это Дреим Тим.")
+            email = message.text
+
+            domain = email.split('@')[1]  # Получаем домен из адреса электронной почты
+
+            if domain not in allowed_domains:
+                await message.reply(no_address)
+            else:
+                # Генерируем и сохраняем код подтверждения
+                confirmation_code = str(random.randint(100000, 999999))
+                print(confirmation_code)
+                cursor.execute('UPDATE db_botuser SET email = ?, code = ? WHERE user_id = ?',
+                               (email, confirmation_code, user_id))
+                conn.commit()
+
+                confirmation_message = f"Код подтверждения: {confirmation_code}"
+                send_email(email, "Код подтверждения", confirmation_message)
+
+                # Переходим в состояние ввода кода подтверждения
+                await RegistrationState.code.set()
+
+                # Отправляем код подтверждения на адрес электронной почты
+                await message.reply(sent_email)
         else:
-            # Генерируем и сохраняем код подтверждения
-            confirmation_code = str(random.randint(100000, 999999))
-            print(confirmation_code)
-            cursor.execute('UPDATE db_botuser SET email = ?, code = ? WHERE user_id = ?',
-                           (email, confirmation_code, user_id))
-            conn.commit()
+            # Обработка сообщения от пользователя, отсутствующего в базе данных
+            await message.reply("Я просто хотел спасти мир, от глобального уничтожения, кому это нужно объяснять")
+            photo_path = "./baza.jpeg"  # Замените путь на фактический путь к файлу изображения
 
-            confirmation_message = f"Код подтверждения: {confirmation_code}"
-            send_email(email, "Код подтверждения", confirmation_message)
+            # Отправка изображения из файла
+            with open(photo_path, 'rb') as photo_file:
+                await bot.send_photo(chat_id=message.chat.id, photo=photo_file)
 
-            # Переходим в состояние ввода кода подтверждения
-            await RegistrationState.code.set()
-
-            # Отправляем код подтверждения на адрес электронной почты
-            await message.reply(sent_email)
 
 
 @dp.message_handler(filters.Regexp(r"^\d{6}$"), state=RegistrationState.code)

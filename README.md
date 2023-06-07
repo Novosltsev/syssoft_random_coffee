@@ -4,9 +4,9 @@
 
 web 
 ```bash
-python admin\manage.py migrate 
-python admin\manage.py createsuperuser
-python admin\manage.py runserver
+python manage.py migrate 
+python manage.py createsuperuser
+python manage.py runserver
 ```
 
 bot

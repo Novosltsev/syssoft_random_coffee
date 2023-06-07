@@ -1,5 +1,5 @@
-TOKEN = '6201647736:AAGkXxhyipMXHmRcREA4DbMa2Yorabw8QPE'
-DOMAINS = ['syssoft.ru', 'gmail.com', 'domain3.com']
+TOKEN = '6049615058:AAEWJ5ILqLpshPldplhtzKy9J3iJHByIwLA'
+DOMAINS = ['gmail.com', 'domain2.com', 'domain3.com']
 smtp_host_co = "smtp.gmail.com"
 smtp_port_co = 587
 smtp_username_co = "novosltsev2010@gmail.com"

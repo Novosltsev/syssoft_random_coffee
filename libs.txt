@@ -1,8 +1,8 @@
-colorama
-aiogram
-requests
-aiohttp_socks
-django
+colorama==0.4.6
+aiogram==2.25.1
+requests==2.31.0
+aiohttp_socks==0.8.0
+django==4.2.2
 django-adminlte3==0.1.6
-django-import-export
-secure-smtplib
+django-import-export==3.2.0
+secure-smtplib==0.1.1
