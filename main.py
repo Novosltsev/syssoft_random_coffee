@@ -104,7 +104,7 @@ async def process_email(message: types.Message, state: FSMContext):
 
         if user:
             # Обработка сообщения от зарегистрированного пользователя
-            await message.reply("Привет! Это Дреим Тим.")
+            await message.reply(already_register)
             email = message.text
 
             domain = email.split('@')[1]  # Получаем домен из адреса электронной почты
@@ -129,8 +129,8 @@ async def process_email(message: types.Message, state: FSMContext):
                 await message.reply(sent_email)
         else:
             # Обработка сообщения от пользователя, отсутствующего в базе данных
-            await message.reply("Я просто хотел спасти мир, от глобального уничтожения, кому это нужно объяснять")
-            photo_path = "./baza.jpeg"  # Замените путь на фактический путь к файлу изображения
+            await message.reply("Вы не в команде syssoft.ru")
+            photo_path = "./godfather.jpg"  # Замените путь на фактический путь к файлу изображения
 
             # Отправка изображения из файла
             with open(photo_path, 'rb') as photo_file:
@@ -230,21 +230,21 @@ async def process_survey_answer(callback_query: types.CallbackQuery):
     await callback_query.answer()
 
 
-@dp.message_handler()
-async def handle_message(message: types.Message):
-    # Получаем информацию о пользователе
-    user_id = message.from_user.id
-
-    # Проверяем, зарегистрирован ли пользователь
-    cursor.execute('SELECT * FROM db_botuser WHERE user_id = ?', (user_id,))
-    user = cursor.fetchone()
-
-    if user:
-        # Обработка сообщения от зарегистрированного пользователя
-        await message.reply("Привет! Это Дреим Тим.")
-    else:
-        # Обработка сообщения от пользователя, отсутствующего в базе данных
-        await message.reply("Привет! Это Дреим Тим.")
+# @dp.message_handler()
+# async def handle_message(message: types.Message):
+#     # Получаем информацию о пользователе
+#     user_id = message.from_user.id
+#
+#     # Проверяем, зарегистрирован ли пользователь
+#     cursor.execute('SELECT * FROM db_botuser WHERE user_id = ?', (user_id,))
+#     user = cursor.fetchone()
+#
+#     if user:
+#         # Обработка сообщения от зарегистрированного пользователя
+#         await message.reply("")
+#     else:
+#         # Обработка сообщения от пользователя, отсутствующего в базе данных
+#         await message.reply("")
 
 
 async def send_coffee_pairs():

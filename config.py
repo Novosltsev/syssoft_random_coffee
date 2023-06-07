@@ -1,5 +1,5 @@
-TOKEN = '6049615058:AAEWJ5ILqLpshPldplhtzKy9J3iJHByIwLA'
-DOMAINS = ['gmail.com', 'domain2.com', 'domain3.com']
+TOKEN = '6201647736:AAGkXxhyipMXHmRcREA4DbMa2Yorabw8QPE'
+DOMAINS = ['syssoft.ru', 'gmail.com', 'domain3.com']
 smtp_host_co = "smtp.gmail.com"
 smtp_port_co = 587
 smtp_username_co = "novosltsev2010@gmail.com"
@@ -14,6 +14,7 @@ bad_address = "Некорректный формат адреса электро
 no_address = "Недопустимый домен адреса электронной почты."
 sent_email = "По вашему адресу отправлен код подтверждения, проверьте почту и введите код."
 great_register = "Поздравляем! Вы зарегистрированы. Правила использования бота вы можете найти в статье https://telegra.ph/Pravila-ispolzovaniya-bota-05-30"
+already_register = "Вы уже зарегистрированы! Правила использования бота вы можете найти в статье https://telegra.ph/Pravila-ispolzovaniya-bota-05-30"
 incorrect = "Неверный код подтверждения."
 pairs = "Привет, твоя пара на эту неделю:"
 no_pairs = "На этой неделе у вас нет пары."
