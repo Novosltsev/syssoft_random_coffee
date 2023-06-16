@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/syssoft_random_coffee.iml" filepath="$PROJECT_DIR$/.idea/syssoft_random_coffee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/random_coffee-main.iml" filepath="$PROJECT_DIR$/.idea/random_coffee-main.iml" />
     </modules>
   </component>
 </project>
