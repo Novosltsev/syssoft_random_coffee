@@ -172,33 +172,31 @@ async def process_code(message: types.Message, state: FSMContext):
     start_time = current_time
 
     print(f"База данных: {user[5]}, Введенный код: {message.text}")
-    while True:
-        if user[5] == message.text:
-            # Код верен, проверяем время ввода
-            current_time = datetime.now()
-            time_difference = current_time - start_time
-            if time_difference.total_seconds() <= 20 * 60:  # Проверяем, что прошло не более 20 минут
-                # Код верен, выполняем необходимые действия
-                # Например, можно установить статус "active" и активность "game"
-                cursor.execute('UPDATE db_botuser SET status = ?, activity = ? WHERE user_id = ?',
-                               ('active', 'game', user_id))
-                conn.commit()
+    while user[5] != message.text:
+        await message.reply(incorrect)
+        message = await bot.wait_for('message', filters=filters.Regexp(r"^\d{6}$"))
 
-                await message.reply(great_register)
-            else:
-                await message.reply(time_gone)
-            break
-        else:
-            await message.reply(incorrect)
-            break
+        # Код верен, проверяем время ввода
+    current_time = datetime.now()
+    time_difference = current_time - start_time
+    if time_difference.total_seconds() <= 20 * 60:  # Проверяем, что прошло не более 20 минут
+        # Код верен, выполняем необходимые действия
+        # статус "active" и активность "game"
+        cursor.execute('UPDATE db_botuser SET status = ?, activity = ? WHERE user_id = ?',
+                       ('active', 'game', user_id))
+        conn.commit()
+
+        await message.reply(great_register)
+    else:
+        await message.reply(time_gone)
 
     # Завершаем состояние и очищаем контекст
     await state.finish()
 
 
 async def send_game_question():
-    # Получаем список пользователей со статусом "активный" и активностью "game"
-    cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ?', ('active', 'game'))
+    # Получаем список пользователей со статусом "активный"
+    cursor.execute('SELECT * FROM db_botuser WHERE status = ?', ('active',))
     users = cursor.fetchall()
 
     # Создаем клавиатуру с кнопками "Да" и "Нет" для каждого вопроса
@@ -267,9 +265,9 @@ async def handle_meeting_yes_callback(query: types.CallbackQuery):
 
             conn.commit()
 
-            await bot.send_message(chat_id=user_id, text="Спасибо за ваш ответ!")
+            await query.answer(text=meeting_yes, show_alert=True)
         else:
-            await bot.send_message(chat_id=user_id, text="Вы не связаны с парой.")
+            await query.answer(text=meeting_no, show_alert=True)
 
 
 @dp.callback_query_handler(lambda query: query.data == 'meeting_no')
@@ -302,9 +300,9 @@ async def handle_meeting_no_callback(query: types.CallbackQuery):
 
             conn.commit()
 
-            await bot.send_message(chat_id=user_id, text="Спасибо за ваш ответ!")
+            await query.answer(text=meeting_yes, show_alert=True)
         else:
-            await bot.send_message(chat_id=user_id, text="Вы не связаны с парой.")
+            await query.answer(text=meeting_no, show_alert=True)
 
 
 @dp.callback_query_handler(lambda query: query.data == 'enjoyed_yes')
@@ -337,9 +335,9 @@ async def handle_enjoyed_yes_callback(query: types.CallbackQuery):
 
             conn.commit()
 
-            await bot.send_message(chat_id=user_id, text="Спасибо за ваш ответ!")
+            await query.answer(text=meeting_yes, show_alert=True)
         else:
-            await bot.send_message(chat_id=user_id, text="Вы не связаны с парой.")
+            await query.answer(text=meeting_no, show_alert=True)
 
 
 @dp.callback_query_handler(lambda query: query.data == 'enjoyed_no')
@@ -372,9 +370,9 @@ async def handle_enjoyed_no_callback(query: types.CallbackQuery):
 
             conn.commit()
 
-            await bot.send_message(chat_id=user_id, text="Спасибо за ваш ответ!")
+            await query.answer(text=meeting_yes, show_alert=True)
         else:
-            await bot.send_message(chat_id=user_id, text="Вы не связаны с парой.")
+            await query.answer(text=meeting_no, show_alert=True)
 
 
 async def save_pair_history(user1_id, user2_id):
@@ -446,7 +444,7 @@ async def send_coffee_pairs():
             pairs = [(users[i], users[i + 1]) for i in range(0, len(users) - 1, 2)]
             pairs.append((users[-1], None))
 
-        admin = None  # Переменная для хранения администратора системы
+        # admin = None # Переменная для хранения администратора системы
 
         for pair in pairs:
             user1 = pair[0]
@@ -472,15 +470,18 @@ async def send_coffee_pairs():
                                             f"Или в Telegram – @{user1[2] or 'ник отсутствует'}\n"
                                             f"Не откладывай, договорись о встрече сразу 🙂")
             else:
-                await bot.send_message(chat_id=user1[1], text="Вы не получили пару.")
+                await bot.send_message(chat_id=user1[1],
+                                       text=f"Бонус!🔥\n"
+                                            f"Вы получили в пару администратора системы."
+                                            f"Свяжитесь с ним в TrueConf по почте - admin@syssoft.ru")
                 # Назначаем администратора системы в пару для пользователя без пары
-                if not admin:
-                    admin = cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ? AND id != ?',
-                                           ('активный', 'в игре', user1[0])).fetchone()
-
-                    if admin:
-                        await bot.send_message(chat_id=user1[1], text=f"{admin[2]} ({admin[3]})")
-                        await save_pair_history(user1[0], admin[0])  # Сохраняем историю пары
+                # if not admin:
+                #     admin = cursor.execute('SELECT * FROM db_botuser WHERE status = ? AND activity = ? AND id != ?',
+                #                            ('активный', 'в игре', user1[0])).fetchone()
+                #
+                #     if admin:
+                #         await bot.send_message(chat_id=user1[1], text=f"{admin[2]} ({admin[3]})")
+                #         await save_pair_history(user1[0], admin[0])  # Сохраняем историю пары
 
 
 @dp.message_handler(commands=['history'])

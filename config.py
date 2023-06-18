@@ -27,4 +27,7 @@ friday_question_2 = "Понравилось общение?"
 friday_question_3 = "На следующей неделе участвуешь?"
 
 button_yes = "Вы приняли участие в random coffee!"
-button_no = "Вы отказались от участия в random coffee."
+button_no = "Вы отказались от участия в random coffee!"
+
+meeting_yes = "Спасибо за ваш ответ!"
+meeting_no = "Вы не связаны с парой."
