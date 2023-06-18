@@ -374,3 +374,11 @@ WARNING:aiogram:Updates were skipped successfully.
 2023-06-18 23:33:43,414 - WARNING - Updates were skipped successfully.
 INFO:aiogram.dispatcher.dispatcher:Start polling.
 2023-06-18 23:33:43,414 - INFO - Start polling.
+INFO:apscheduler.executors.default:Running job "send_coffee_pairs (trigger: cron[day_of_week='sun', hour='23', minute='34'], next run at: 2023-06-25 23:34:00 MSK)" (scheduled at 2023-06-18 23:34:00+03:00)
+2023-06-18 23:34:00,006 - INFO - Running job "send_coffee_pairs (trigger: cron[day_of_week='sun', hour='23', minute='34'], next run at: 2023-06-25 23:34:00 MSK)" (scheduled at 2023-06-18 23:34:00+03:00)
+INFO:apscheduler.executors.default:Job "send_coffee_pairs (trigger: cron[day_of_week='sun', hour='23', minute='34'], next run at: 2023-06-25 23:34:00 MSK)" executed successfully
+2023-06-18 23:34:00,416 - INFO - Job "send_coffee_pairs (trigger: cron[day_of_week='sun', hour='23', minute='34'], next run at: 2023-06-25 23:34:00 MSK)" executed successfully
+INFO:apscheduler.executors.default:Running job "send_survey (trigger: cron[day_of_week='sun', hour='23', minute='35'], next run at: 2023-06-25 23:35:00 MSK)" (scheduled at 2023-06-18 23:35:00+03:00)
+2023-06-18 23:35:00,003 - INFO - Running job "send_survey (trigger: cron[day_of_week='sun', hour='23', minute='35'], next run at: 2023-06-25 23:35:00 MSK)" (scheduled at 2023-06-18 23:35:00+03:00)
+INFO:apscheduler.executors.default:Job "send_survey (trigger: cron[day_of_week='sun', hour='23', minute='35'], next run at: 2023-06-25 23:35:00 MSK)" executed successfully
+2023-06-18 23:35:00,839 - INFO - Job "send_survey (trigger: cron[day_of_week='sun', hour='23', minute='35'], next run at: 2023-06-25 23:35:00 MSK)" executed successfully
