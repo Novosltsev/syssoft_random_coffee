@@ -20,7 +20,7 @@ TOKEN = 'YOUR_TOKEN'
 DOMAINS = ['domain1.com', 'domain2.com', 'domain3.com']
 ```
 
-Чтобы запустить проект через Docker
+Чтобы запустить проект через Docker c использованием Portainer
 ```python
 # команда создает Docker-том для хранения данных Portainer
 docker volume create portainer_data
